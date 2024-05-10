@@ -17,13 +17,5 @@ func SetupRouter() *gin.Engine {
 
 	router.POST("/testPost", controller.TestPostRequest)
 
-	// Supabase routes
-	router.POST("/signup", controller.SignUp)
-
-	router.POST("/signin", controller.SignIn)
-
-	// Account routes
-	router.POST("/getAccountsByUser", controller.GetAccountsByUser)
-
 	return router
 }
