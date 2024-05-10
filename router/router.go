@@ -17,5 +17,10 @@ func SetupRouter() *gin.Engine {
 
 	router.POST("/testPost", controller.TestPostRequest)
 
+	// Payment routes
+	router.POST("/payment/send", controller.SendPayment)
+
+	router.POST("/payment/withdraw", controller.WithdrawPayment)
+
 	return router
 }
