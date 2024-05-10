@@ -22,5 +22,8 @@ func SetupRouter() *gin.Engine {
 
 	router.POST("/payment/withdraw", controller.WithdrawPayment)
 
+	// Transaction routes
+	router.POST("/transaction/list-by-user", controller.TransactionListByUser)
+
 	return router
 }
