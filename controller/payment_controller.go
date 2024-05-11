@@ -76,6 +76,8 @@ func SendPayment(ctx *gin.Context) {
 
 }
 
+var emailCtxKey = "email"
+
 func WithdrawPayment(ctx *gin.Context) {
 	var req PaymentRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {

@@ -15,8 +15,7 @@ func SetupDatabase() *sqlx.DB {
 	 // Test the connection to the database
 	if err := db.Ping(); err != nil {
         log.Fatal(err)
-    } else {
-        log.Println("Database Successfully Connected")
     }
+	 
 	return db
 }
