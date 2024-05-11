@@ -37,6 +37,17 @@ func SendPayment(ctx *gin.Context) {
 		return
 	}
 
+	// Check if balance is enough
+	isBalanceEnough, errCheckBalance := checkBalance(req.IdAccountFrom, req.Amount)
+	if errCheckBalance != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": errCheckBalance.Error()})
+		return
+	}
+	if !isBalanceEnough {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Balance is not enough"})
+		return
+	}
+
 	// Reduce balance from account
 	_, err := reduceBalance(req.IdAccountFrom, req.Amount)
 	if err != nil {
@@ -80,6 +91,17 @@ func WithdrawPayment(ctx *gin.Context) {
 	}
 	if !isAccountFromBelongsToUser {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Account from does not belong to user"})
+		return
+	}
+
+	// Check if balance is enough
+	isBalanceEnough, errCheckBalance := checkBalance(req.IdAccountFrom, req.Amount)
+	if errCheckBalance != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": errCheckBalance.Error()})
+		return
+	}
+	if !isBalanceEnough {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Balance is not enough"})
 		return
 	}
 
@@ -150,4 +172,29 @@ func checkAccountUser(idUser int, idAccount int) (bool, error) {
 	}
 
 	return false, nil
+}
+
+func checkBalance(idAccount int, amount int) (bool, error) {
+	db := config.SetupDatabase()
+
+	sqlQuery := "SELECT v_balance FROM be_assignment.accounts WHERE i_id = $1"
+
+	rows, err := db.Query(sqlQuery, idAccount)
+	if err != nil {
+		return false, err
+	}
+
+	var balance int
+	if rows.Next() {
+		err := rows.Scan(&balance)
+		if err != nil {
+			return false, err
+		}
+	}
+
+	if balance < amount {
+		return false, nil
+	}
+
+	return true, nil
 }
